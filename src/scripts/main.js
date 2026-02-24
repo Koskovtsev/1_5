@@ -3,84 +3,96 @@ import moment from 'moment';
 const timerDiv = document.querySelector('.timer');
 let timerNumber = 0;
 
+function buttonsVisibility(display) {
+  const buttons = document.querySelectorAll('wired-button');
+  buttons.forEach((button) => {
+    const { style } = button;
+    style.display = display;
+  });
+}
+
 function runTimer(minutes) {
   let totalSeconds = minutes * 60;
   const timerCounDown = document.querySelector('.timer-countdown');
-  let setMoment = moment.duration(totalSeconds, 'seconds');
-  let showRemainingTimeInSeconds = moment.utc(0);
-  showRemainingTimeInSeconds.add(setMoment);
-  timerCounDown.innerHTML = showRemainingTimeInSeconds.format('mm:ss');
+  const statusMessage = document.querySelector('.status_message');
+  const timerCount = document.querySelector('.timer-countdown');
+  const updateDisplay = () => {
+    const duration = moment.utc(totalSeconds * 1000);
+    const format = totalSeconds >= 3600 ? 'HH:mm:ss' : 'mm:ss';
+    timerCounDown.innerHTML = duration.format(format);
+  };
+  updateDisplay();
   if (totalSeconds > 0) {
     totalSeconds -= 1;
   } else {
-    const startButton = document.querySelector('.start');
-    startButton.style.display = 'block';
+    buttonsVisibility('block');
     timerNumber = 0;
   }
   const myInterval = setInterval(() => {
-    setMoment = moment.duration(totalSeconds, 'seconds');
-    showRemainingTimeInSeconds = moment.utc(0);
-    showRemainingTimeInSeconds.add(setMoment);
-    timerCounDown.innerHTML = showRemainingTimeInSeconds.format('mm:ss');
     if (totalSeconds > 0) {
+      updateDisplay();
       totalSeconds -= 1;
-    } else {
-      clearInterval(myInterval);
-      const startButton = document.querySelector('.start');
-      startButton.style.display = 'block';
-      const statusMessage = document.querySelector('.status_message');
-      statusMessage.innerHTML = 'Вкажіть час в хвилинах';
-      const timerCount = document.querySelector('.timer-countdown');
-      timerNumber = 0;
-      timerCount.innerHTML = timerNumber;
+      return;
     }
-  }, 1000);
-  const ukrainianDate = moment().format('dddd, D MMMM YYYY mm:ss');
-  const newText = `Створено: ${ukrainianDate}`;
-  timerDiv.append(newText);
+    clearInterval(myInterval);
+    buttonsVisibility('block');
+    timerNumber = 0;
+    statusMessage.innerHTML = 'Укажіть час в хвилинах';
+    timerCount.innerHTML = timerNumber;
+  }, 10);
+}
+
+function createCustomElement(elem, className, text, elevationValue) {
+  const element = document.createElement(elem);
+  element.className = className;
+  if (text) {
+    element.innerHTML = text;
+  }
+  if (elevationValue) {
+    element.setAttribute('elevation', elevationValue);
+  }
+  return element;
 }
 
 function renderButtons() {
-  const startButton = document.createElement('button');
-  const plusButton = document.createElement('button');
-  const minusButton = document.createElement('button');
-  startButton.className = 'start';
-  plusButton.className = 'plusMin';
-  minusButton.className = 'minusMin';
-  startButton.innerText = 'Start';
-  plusButton.innerText = '+';
-  minusButton.innerText = '-';
-  timerDiv.append(minusButton, plusButton, startButton);
+  const startButton = createCustomElement('wired-button', 'start', 'Start', '5');
+  const plusButton = createCustomElement('wired-button', 'plusMin', '+', '3');
+  const minusButton = createCustomElement('wired-button', 'minusMin', '-', '3');
+  const timerLabel = createCustomElement('p', 'timer-countdown', '0');
+  const setMinutesWrapper = createCustomElement('div', 'timer-minutes_wrapper');
+  setMinutesWrapper.append(minusButton, timerLabel, plusButton);
+  timerDiv.append(setMinutesWrapper, startButton);
+}
+
+function eventHandler(event) {
+  const statusMessage = document.querySelector('.status_message');
+  const timerCount = document.querySelector('.timer-countdown');
+  const { target } = event;
+  const buttonActions = {
+    start: () => {
+      buttonsVisibility('none');
+      runTimer(timerNumber);
+      statusMessage.innerHTML = 'Залишилось';
+    },
+    plusMin: () => {
+      timerNumber += 1;
+      timerCount.innerHTML = timerNumber;
+    },
+    minusMin: () => {
+      timerCount.innerHTML = timerNumber !== 0 ? timerNumber -= 1 : 0;
+    },
+  };
+  const keys = Object.keys(buttonActions);
+  const actionKey = keys.find((className) => target.classList.contains(className));
+  if (actionKey) {
+    buttonActions[actionKey]();
+  }
 }
 
 function timer() {
   renderButtons();
-  const statusMessage = document.querySelector('status_message');
-  const startButton = document.querySelector('.start');
-  const timerCount = document.createElement('p');
-  timerCount.className = 'timer-countdown';
-  timerCount.innerHTML = timerNumber;
-  timerDiv.append(timerCount);
-
   timerDiv.addEventListener('click', (event) => {
-    const { target } = event;
-    if (target.className === 'start' && timerNumber > 0) {
-      target.style.display = 'none';
-      runTimer(timerNumber);
-      statusMessage.innerHTML = 'Залишилось';
-    }
-    if (target.className === 'plusMin') {
-      if (startButton.style.display !== 'none') {
-        timerNumber += 1;
-        timerCount.innerHTML = +timerNumber;
-      }
-    }
-    if (target.className === 'minusMin') {
-      if (timerNumber !== 0 && startButton.style.display !== 'none') {
-        timerNumber -= 1;
-        timerCount.innerHTML = +timerNumber;
-      }
-    }
+    eventHandler(event);
   });
 }
 
