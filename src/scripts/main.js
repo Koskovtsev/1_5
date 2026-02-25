@@ -22,7 +22,6 @@ function runTimer(minutes) {
     timerCounDown.innerHTML = duration.format(format);
   };
   updateDisplay();
-  // console.log('display updated');
   if (totalSeconds > 0) {
     totalSeconds -= 1;
   } else {
@@ -40,7 +39,7 @@ function runTimer(minutes) {
     timerNumber = 0;
     statusMessage.innerHTML = 'Укажіть час в хвилинах';
     timerCount.innerHTML = timerNumber;
-  }, 10);
+  }, 1000);
 }
 
 function createCustomElement(elem, className, text, elevationValue) {
@@ -72,7 +71,6 @@ function eventHandler(event) {
   const statusMessage = document.querySelector('.status_message');
   const timerCount = document.querySelector('.timer-countdown');
   const { target } = event;
-  // console.log('elem: ', target);
   const buttonActions = {
     start: () => {
       if (timerNumber <= 0) {
@@ -80,7 +78,6 @@ function eventHandler(event) {
       }
       buttonsVisibility('none');
       runTimer(timerNumber);
-      // console.log('start button is pressed');
       statusMessage.innerHTML = 'Залишилось';
     },
     plusMin: () => {

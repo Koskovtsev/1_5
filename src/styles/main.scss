@@ -1,11 +1,9 @@
 @import 'reset.scss';
 
 .wrapper {
-  // min-height: 100vh;
   display: grid;
   grid-template-columns: 1fr 2fr 1fr;
   grid-template-rows: auto 1fr auto;
-  // line-height: 23px;
 
   &>* {
     grid-column: 2 / -2;
@@ -13,10 +11,7 @@
 
   header {
     font-family: 'Comfortaa', cursive;
-    // grid-column: 1 / -1;
-    // Photo by Karsten Würth (@inf1783) on Unsplash
     background: #fff;
-    // background-size: cover;
     height: 200px;
     display: flex;
     justify-content: center;
@@ -28,7 +23,6 @@
       font-size: 3.5em;
       text-shadow: -2px -2px 3px rgb(163, 162, 162);
     }
-
   }
 
   main {
@@ -61,16 +55,11 @@
       height: 36px !important;
       align-items: center;
       justify-content: center;
-      // 2. Цей рядок "магічний" — він дозволяє кнопці приймати розміри
       display: inline-flex !important;
 
       font-size: 29px;
       font-weight: 850;
     }
-
-    // .plusMin {
-    //   font-size: 40px;
-    // }
 
     p {
       font-family: 'Nunito', sans-serif;
@@ -79,12 +68,10 @@
 
     .start {
       background: rgb(0, 205, 0);
-      // --wired-button-bg: rgb(0, 205, 0);
       color: #000;
       text-transform: none !important;
       margin: 10px;
 
-      // padding: 0 3px 3px 0;
       span {
         color: #fff;
         text-transform: none !important;
